@@ -30,4 +30,15 @@ def validar_simbolos(cadena: str) -> bool:
         >>> validar_simbolos("  XIV  ")
         True
     """
-    raise NotImplementedError()
+    # 1. Aplicamos la pista de eliminar espacios laterales
+    cadena_limpia = cadena.strip()
+
+    # 2. Pista: si está vacía después del strip, no es válida
+    if not cadena_limpia:
+        return False
+
+    # 3. Definimos las letras permitidas (el alfabeto romano)
+    alfabeto = "IVXLCDM"
+
+    # 4. Manera de decir que se revise que todo el contenido esté en el alfabeto
+    return all(caracter in alfabeto for caracter in cadena_limpia)

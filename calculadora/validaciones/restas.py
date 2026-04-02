@@ -7,7 +7,11 @@ IV (4), IX (9), XL (40), XC (90), CD (400), CM (900)
 Ejemplos válidos: IV, IX, XL, XC, CD, CM, XIV (X + IV)
 Ejemplos inválidos: IL (49), IC (99), XD (490), XM (990), VX (5), LC (50)
 """
-
+# Constantes necesarias para la lógica del nivel
+VALORES = {
+    "I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000
+}
+SUSTRACCIONES_VALIDAS = {"IV", "IX", "XL", "XC", "CD", "CM"}
 
 def validar_restas(cadena: str) -> bool:
     """
@@ -43,4 +47,22 @@ def validar_restas(cadena: str) -> bool:
         >>> validar_restas("MCMXCIV")
         True
     """
-    raise NotImplementedError()
+    i = 0
+    while i < len(cadena) - 1:
+        # Detectamos una sustracctión (valor actual < valor siguiente)
+        if VALORES[cadena[i]] < VALORES[cadena[i+1]]:
+            par = cadena[i:i+2]
+
+            # Verificamos si el par está en las permitidas
+            if par not in SUSTRACCIONES_VALIDAS:
+                return False
+
+            # Ejemplo "IIX" -> Si hay una resta, el anterior no puede ser igual
+            if i > 0 and cadena[i-1] == cadena[i]:
+                return False
+
+            i += 2 #Si es una resta válida, saltamos ambos caracteres
+        else:
+            i += 1
+
+    return True

@@ -5,7 +5,7 @@ Este módulo contiene la función principal para evaluar expresiones aritmética
 
 from calculadora.conversor import romano_a_entero
 from calculadora.error import ExpresionInvalida
-from calculadora.parser import evaluar_expresion as parsear_expresion
+from calculadora.parser import evaluar_expresion
 
 
 def evaluar(expresion: str) -> int:
@@ -61,4 +61,38 @@ def evaluar(expresion: str) -> int:
         >>> evaluar('MMMCMXCIX + I')
         4000
     """
-    raise NotImplementedError()
+    # 1. Obtenemos los tokens usando el parser del nivel anterior
+    tokens = evaluar_expresion(expresion)
+
+    if not tokens:
+        raise ExpresionInvalida("La expresión no puede estar vacía")
+
+    # 2. Filtramos los espacios para trabajar solo con números y operadores
+    tokens_utiles = [t for t in tokens if t.tipo != "ESPACIO"]
+
+    if not tokens_utiles:
+        raise ExpresionInvalida("La expresión no contiene símbolos válidos")
+
+    # 3. Inicializamos el resultado con el primer número romano
+    resultado = romano_a_entero(tokens_utiles[0].valor)
+
+    # 4. Recorremos los tokens restantes de dos en dos
+    i = 1
+    while i < len(tokens_utiles):
+        operador = tokens_utiles[i]
+        siguiente_numero = tokens_utiles[i+1]
+
+        valor_num = romano_a_entero(siguiente_numero.valor)
+
+        if operador.tipo == "SUMA":
+            resultado += valor_num
+        elif operador.tipo == "RESTA":
+            resultado -= valor_num
+
+        i += 2
+
+    # 5. El resultado debe ser positivo
+    if resultado <= 0:
+        raise ExpresionInvalida(f"Resultado inválido({resultado}): debe ser mayor que cero")
+
+    return resultado

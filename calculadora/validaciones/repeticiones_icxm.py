@@ -36,4 +36,8 @@ def validar_repeticiones_icxm(cadena: str) -> bool:
         >>> validar_repeticiones_icxm("MMMM")
         False
     """
-    raise NotImplementedError()
+    # 1. Definimos las listas de patrones que están prohibidas como más de 3 repeticiones
+    patrones_invalidos = ["IIII", "XXXX", "CCCC", "MMMM"]
+
+    # 2. Verificar que ningún patón esté en la cadena
+    return all(patron not in cadena for patron in patrones_invalidos)

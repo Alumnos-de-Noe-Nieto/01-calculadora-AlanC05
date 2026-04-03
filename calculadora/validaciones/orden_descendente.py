@@ -6,6 +6,11 @@ Excepción: las 6 formas sustractivas válidas.
 Ejemplos válidos: XVI, MDCLXVI, XIV (sustracción válida)
 Ejemplos inválidos: IVX, IIV, VIV
 """
+# Constantes necesarias para la lógica del nivel
+VALORES = {
+        "I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000
+    }
+SUSTRACCIONES_VALIDAS = { "IV", "IX", "XL", "XC", "CD", "CM"}
 
 def validar_orden_descendente(cadena: str) -> bool:
     """
@@ -44,4 +49,38 @@ def validar_orden_descendente(cadena: str) -> bool:
         >>> validar_orden_descendente("VIV")
         False
     """
-    raise NotImplementedError()
+    i = 0
+    ultimo_valor = 1001 # Empezamos con un valor mayor al máximo, es decir M
+
+    while i < len(cadena):
+        simbolo_actual = cadena[i]
+        valor_actual = VALORES[simbolo_actual]
+
+        # Revisamos si estamos ante una posible sustracción
+        sustraccion_detectada = False
+        if i + 1 < len(cadena):
+            par = cadena[i:i+2]
+            if par in SUSTRACCIONES_VALIDAS:
+                sustraccion_detectada = True
+                valor_sustraccion = VALORES[cadena[i+1]] - VALORES[cadena[i]]
+
+                # No puede haber repeticiones antes
+                if i > 0 and cadena[i-1] == cadena[i]:
+                    return False
+
+                # El valor de la sustracción debe ser menor al anterior
+                if valor_sustraccion >= ultimo_valor:
+                    return False
+
+                ultimo_valor = valor_sustraccion
+                i += 2 # Saltamos los dos caracteres de la sustracción
+
+        if not sustraccion_detectada:
+            # Si no es sustracción, el valor debe ser menor o igual al anterior
+            if valor_actual > ultimo_valor:
+                return False
+
+            ultimo_valor = valor_actual
+            i += 1
+
+    return True
